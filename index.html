@@ -1,74 +1,159 @@
 <!doctype html>
 <html lang="pl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
-<title>Zaproszenie do wspólnej listy zakupów</title>
-<style>
-  :root { --bg: #F4FAF9; --card: #FFFFFF; --text: #132B2A; --muted: #45605D; --accent: #0B7A75; --border: #CFE6E2; }
-  * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
-         background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; padding: 24px; }
-  main { width: 100%; max-width: 420px; background: var(--card); border: 1px solid var(--border); border-radius: 24px;
-         padding: 28px 24px; display: flex; flex-direction: column; gap: 18px; text-align: center; }
-  h1 { margin: 0; font-size: 24px; }
-  p { margin: 0; color: var(--muted); line-height: 1.5; }
-  .code { font-size: 40px; font-weight: 800; letter-spacing: 8px; color: var(--accent); }
-  a.button, button { display: block; width: 100%; min-height: 52px; border-radius: 16px; font-size: 17px; font-weight: 700;
-         text-decoration: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit; }
-  a.button { background: var(--accent); color: #FFFFFF; border: none; }
-  button { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
-  ol { text-align: left; color: var(--muted); margin: 0; padding-left: 20px; line-height: 1.6; }
-  .error { color: #B3261E; }
-</style>
-</head>
-<body>
-<main>
-  <h1>Zaproszenie do wspólnej listy</h1>
-  <p>Ktoś zaprasza Cię do wspólnej listy zakupów w aplikacji SomethingMagical.</p>
-  <div class="code" id="code" aria-label="Kod zaproszenia">——————</div>
-  <a class="button" id="open" href="#">Otwórz w aplikacji</a>
-  <button type="button" id="copy">Skopiuj kod</button>
-  <p id="status" role="status"></p>
-  <ol>
-    <li>Otwórz aplikację SomethingMagical.</li>
-    <li>Wybierz „Dołącz do listy”.</li>
-    <li>Wpisz kod z tej strony.</li>
-  </ol>
-</main>
-<script>
-  // Only reads the invite code from the URL. No data is sent anywhere.
-  (function () {
-    var params = new URLSearchParams(window.location.search);
-    var code = (params.get('code') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
-    var codeEl = document.getElementById('code');
-    var statusEl = document.getElementById('status');
-    var openEl = document.getElementById('open');
-    if (code.length !== 6) {
-      codeEl.textContent = '——————';
-      statusEl.textContent = 'Ten link nie zawiera poprawnego kodu zaproszenia.';
-      statusEl.className = 'error';
-      openEl.style.display = 'none';
-      return;
-    }
-    codeEl.textContent = code;
-    // `app` = optional development link (Expo Go: exp://…/--/join/CODE); otherwise the app scheme.
-    var dev = params.get('app');
-    // Development only: Expo Go links to a dev server on the local network (private IPs). Remove at MVP.
-    var devOk = !!dev && /^exp:\/\/(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)[\d.]+:\d+\/--\/join\/[A-Z0-9]{6}$/.test(dev);
-    var appLink = devOk ? dev : 'somethingmagical://join/' + code;
-    openEl.href = appLink;
-    document.getElementById('copy').addEventListener('click', function () {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(code).then(function () { statusEl.textContent = 'Kod skopiowany.'; });
-      } else {
-        statusEl.textContent = 'Kod: ' + code;
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Zaproszenie do wspólnej listy zakupów</title>
+    <style>
+      :root {
+        --bg: #f4faf9;
+        --card: #ffffff;
+        --text: #132b2a;
+        --muted: #45605d;
+        --accent: #0b7a75;
+        --border: #cfe6e2;
       }
-    });
-    // Try to open the app right away; if it is not installed the page stays with the code.
-    setTimeout(function () { window.location.href = appLink; }, 300);
-  })();
-</script>
-</body>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+        padding: 24px;
+      }
+      main {
+        width: 100%;
+        max-width: 420px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 28px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        text-align: center;
+      }
+      h1 {
+        margin: 0;
+        font-size: 24px;
+      }
+      p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .code {
+        font-size: 40px;
+        font-weight: 800;
+        letter-spacing: 8px;
+        color: var(--accent);
+      }
+      a.button,
+      button {
+        display: block;
+        width: 100%;
+        min-height: 52px;
+        border-radius: 16px;
+        font-size: 17px;
+        font-weight: 700;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      a.button {
+        background: var(--accent);
+        color: #ffffff;
+        border: none;
+      }
+      button {
+        background: var(--bg);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      ol {
+        text-align: left;
+        color: var(--muted);
+        margin: 0;
+        padding-left: 20px;
+        line-height: 1.6;
+      }
+      .error {
+        color: #b3261e;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Zaproszenie do wspólnej listy</h1>
+      <p>Ktoś zaprasza Cię do wspólnej listy zakupów w aplikacji SomethingMagical.</p>
+      <div class="code" id="code" aria-label="Kod zaproszenia">——————</div>
+      <a class="button" id="open" href="#">Otwórz w aplikacji</a>
+      <button type="button" id="copy">Skopiuj kod</button>
+      <p id="status" role="status"></p>
+      <ol>
+        <li>Otwórz aplikację SomethingMagical.</li>
+        <li>Wybierz „Dołącz do listy”.</li>
+        <li>Wpisz kod z tej strony.</li>
+      </ol>
+    </main>
+    <script>
+      // Only reads the invite code from the URL. No data is sent anywhere.
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var code = (params.get('code') || '')
+          .toUpperCase()
+          .replace(/[^A-Z0-9]/g, '')
+          .slice(0, 6);
+        var codeEl = document.getElementById('code');
+        var statusEl = document.getElementById('status');
+        var openEl = document.getElementById('open');
+        if (code.length !== 6) {
+          codeEl.textContent = '——————';
+          statusEl.textContent = 'Ten link nie zawiera poprawnego kodu zaproszenia.';
+          statusEl.className = 'error';
+          openEl.style.display = 'none';
+          return;
+        }
+        codeEl.textContent = code;
+        // `app` = optional development link (Expo Go: exp://…/--/join/CODE); otherwise the app scheme.
+        var dev = params.get('app');
+        // Development only: Expo Go links to a dev server on the local network (private IPs). Remove at MVP.
+        var devOk =
+          !!dev &&
+          /^exp:\/\/(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)[\d.]+:\d+\/--\/join\/[A-Z0-9]{6}$/.test(
+            dev,
+          );
+        var appLink = devOk ? dev : 'somethingmagical://join/' + code;
+        openEl.href = appLink;
+        document.getElementById('copy').addEventListener('click', function () {
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(code).then(function () {
+              statusEl.textContent = 'Kod skopiowany.';
+            });
+          } else {
+            statusEl.textContent = 'Kod: ' + code;
+          }
+        });
+        // Try to open the app right away; if it is not installed the page stays with the code.
+        setTimeout(function () {
+          window.location.href = appLink;
+        }, 300);
+      })();
+    </script>
+  </body>
 </html>
