@@ -55,7 +55,9 @@
     codeEl.textContent = code;
     // `app` = optional development link (Expo Go: exp://…/--/join/CODE); otherwise the app scheme.
     var dev = params.get('app');
-    var appLink = dev && /^exps?:\/\//.test(dev) ? dev : 'somethingmagical://join/' + code;
+    // Development only: Expo Go links to a dev server on the local network (private IPs). Remove at MVP.
+    var devOk = !!dev && /^exp:\/\/(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)[\d.]+:\d+\/--\/join\/[A-Z0-9]{6}$/.test(dev);
+    var appLink = devOk ? dev : 'somethingmagical://join/' + code;
     openEl.href = appLink;
     document.getElementById('copy').addEventListener('click', function () {
       if (navigator.clipboard) {
