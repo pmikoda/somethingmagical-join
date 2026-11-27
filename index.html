@@ -99,8 +99,8 @@
   </head>
   <body>
     <main>
-      <h1>Zaproszenie do wspólnej listy</h1>
-      <p>Ktoś zaprasza Cię do wspólnej listy zakupów w aplikacji SomethingMagical.</p>
+      <h1 id="title">Zaproszenie do wspólnej listy</h1>
+      <p id="lead">Ktoś zaprasza Cię do wspólnej listy zakupów w aplikacji SomethingMagical.</p>
       <div class="code" id="code" aria-label="Kod zaproszenia">——————</div>
       <a class="button" id="open" href="#">Otwórz w aplikacji</a>
       <button type="button" id="copy">Skopiuj kod</button>
@@ -130,6 +130,13 @@
           return;
         }
         codeEl.textContent = code;
+        // dom=1: an invite to a household (one-off, valid 48 hours), joined the same way
+        if (params.get('dom') === '1') {
+          document.title = 'Zaproszenie do domu';
+          document.getElementById('title').textContent = 'Zaproszenie do domu';
+          document.getElementById('lead').textContent =
+            'Ktoś zaprasza Cię do swojego domu w aplikacji SomethingMagical: wspólna lista zakupów, przepisy i „Mam w domu”. Kod jest jednorazowy i ważny 48 godzin.';
+        }
         // `app` = optional development link (Expo Go: exp://…/--/join/CODE); otherwise the app scheme.
         var dev = params.get('app');
         // Development only: Expo Go links to a dev server on the local network (private IPs). Remove at MVP.
